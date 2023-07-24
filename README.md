@@ -24,6 +24,13 @@ Give execution permissions to the scripts in the project
 ```bash
 chmod +x ./scripts/*.sh
 ```
+
+## Override default volumes path
+
+If you want to override the default volumes path you can use the command
+```bash
+ container_volume="your/desired/path" && mkdir -p "$container_volume" && sed -i "s|device: ./container_volumes|device: $container_volume|g" docker-compose.yaml
+```
 ## Recommendations 
 
 We recomend you to run the default setup option, it will handle most of the configuration for you.
