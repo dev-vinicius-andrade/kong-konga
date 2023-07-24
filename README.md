@@ -7,8 +7,17 @@ Pre-requisites
 - **docker-compose**, *you can install it from* [here](https://docs.docker.com/compose/install/)
 - *Optional: **git**, you can install it from [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)*
 
+**IMPORTANT** your docker compose must be able to run version 3.9 or higher
+
 # How to use it
 - Clone this repository
+- Create a .env.local file in the root of the project, you can do it by running the following command
+```bash
+cp .env.example .env.local
+```
+- Edit the .env.local file and set the environment variables as you need
+
+
 
 ## Setup Script permissions
 Give execution permissions to the scripts in the project
