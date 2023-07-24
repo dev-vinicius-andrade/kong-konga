@@ -137,25 +137,25 @@ volumes:
       o: bind
       type: none
       device: ./container_volumes/konga/data
-      create_host_path: "true"
+      create: "true"
   kong-banner-conf:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ./container_volumes/kong/banner/conf
-      create_host_path: "true"
+      create: "true"
   db-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ./container_volumes/db/data
-      create_host_path: "true"
+      create: "true"
   elasticsearch-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ./container_volumes/elasticsearch/data
-      create_host_path: "true"
+      create: "true"
