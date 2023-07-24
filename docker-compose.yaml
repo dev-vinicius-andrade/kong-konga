@@ -136,22 +136,22 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${pwd}/container_volumes/konga/data
+      device: "$(pwd)/container_volumes/konga/data"
   kong-banner-conf:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${pwd}/container_volumes/kong/banner/conf
+      device: "$(pwd)/container_volumes/kong/banner/conf"
   db-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${pwd}/container_volumes/db/data
+      device: "$(pwd)/container_volumes/db/data"
   elasticsearch-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${pwd}/container_volumes/elasticsearch/data
+      device: "$(pwd)/container_volumes/elasticsearch/data"
