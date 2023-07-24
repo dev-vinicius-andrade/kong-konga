@@ -1,4 +1,4 @@
-FROM node AS kong-konga-database-setup-base
+FROM node AS kong-konga-database-setup
 WORKDIR /app
 WORKDIR /app
 COPY ./scripts/database .

@@ -1,2 +1,2 @@
 #!/bin/bash
-docker compose --profile setup -f docker-compose.yaml -f docker-compose.setup.yaml --env-file ./.env.local  up -d
+docker compose --profile setup -f docker-compose.yaml -f docker-compose.setup.yaml --env-file ./.env.local  up --build -d
