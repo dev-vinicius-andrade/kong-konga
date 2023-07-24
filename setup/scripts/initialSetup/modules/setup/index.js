@@ -115,6 +115,7 @@ async function createKongaConfigurations(){
     await createKongaKongDefaultSeed(kongOptions,keyAuth);
 }
 async function defaultSetup(){
+    console.table(returnSetupInfo());
     const isReady=  await checkKongAdminAPI(10, 5000);
     if(!isReady) {
         console.error("Kong Admin API is not ready. Exiting.");

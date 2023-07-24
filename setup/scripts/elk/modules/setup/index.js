@@ -287,6 +287,7 @@ async function createUsers(){
 }
 async function defaultSetup(){
     try {
+        console.table(returnSetupInfo());
         const isConnected = await checkElkIsReady(10,3000);
         if(!isConnected) throw new Error("Elastic is not ready");
         await setupBuiltinUsers();

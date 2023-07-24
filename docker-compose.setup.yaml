@@ -35,7 +35,7 @@ services:
       context: setup/
       target: kong-konga-database-setup
       no_cache: false
-    #command: --interactive
+    command: --interactive
     depends_on:
       db:
         condition: service_started
@@ -45,7 +45,7 @@ services:
     networks:
       - kong-net
     env_file:
-      - ./.env.example
+      - ./.env.local
     stdin_open: true
     tty: true
     profiles:
@@ -73,7 +73,7 @@ services:
     networks:
       - kong-net
     env_file:
-      - ./.env.example
+      - ./.env.local
     stdin_open: true
     tty: true
     profiles:
@@ -87,7 +87,7 @@ services:
     networks:
       - kong-net
     env_file:
-      - ./.env.example
+      - ./.env.local
     profiles:
       - setup
   setup-elk:
@@ -107,7 +107,7 @@ services:
       elasticsearch:
         condition: service_started
     env_file:
-      - ./.env.example
+      - ./.env.local
     profiles:
       - setup
   logstash:
@@ -125,7 +125,7 @@ services:
   portainer:
     image: portainer/portainer-ce:latest
     ports:
-      - 9443:9443
+      - "${PORTAINER_EXPOSED_PORT}:9443"
     profiles:
       - setup
     volumes:

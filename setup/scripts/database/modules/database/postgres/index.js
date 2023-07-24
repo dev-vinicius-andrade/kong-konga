@@ -4,7 +4,9 @@ async function createPostgresConnection(options){
     let isConnected = false;
     const retryIntervalSeconds = 5;
     while(!isConnected){
-        const connection = new pg.Client(buildConnectionString({...options,type:'postgres'}));
+        const connectionString = buildConnectionString({...options,type:'postgres'})
+        console.log(`Connecting to database using connection string: ${connectionString}`);
+        const connection = new pg.Client(connectionString);
         try{
             await connection.connect();
             isConnected = true;

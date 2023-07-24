@@ -20,30 +20,30 @@ async function createKongMenu(){
     menu.resetMenu();
     const errors = [];
     try{
+        const infos = setup.returnKongaSetupInfo();
         const {isConnected} = await setup.canConnectToKongDatabase();
         menu.disableDefaultHeader()
-    .customHeader(()=>{
-        const infos = setup.returnKongSetupInfo();
-        console.table(infos);
-        process.stdout.write(`Can connect to database: \x1b[32m${isConnected} \x1b[0m` + "\n");
-        
-    })
-    .addDelimiter('-', 40, 'Kong Setup')
-    .addItem('Run Kong Database Setup',async ()=>{
-        try{
-            await setup.runKongDatabaseSetup();
-        }catch(err){
-            errors.push(err);
-        }
-    }).addItem('Show Errors',async ()=>{
-        console.log("Errors:",errors);
-    })
-    .addItem('Back',async()=>{
-        menu.resetMenu();
-        createAndStartMenu()
-    })
-    .addDelimiter('-', 40)
-    .start();
+        .customHeader(()=>{
+            console.table(infos);
+            process.stdout.write(`Can connect to database: \x1b[32m${isConnected} \x1b[0m` + "\n");
+            
+        })
+        .addDelimiter('-', 40, 'Kong Setup')
+        .addItem('Run Kong Database Setup',async ()=>{
+            try{
+                await setup.runKongDatabaseSetup();
+            }catch(err){
+                errors.push(err);
+            }
+        }).addItem('Show Errors',async ()=>{
+            console.log("Errors:",errors);
+        })
+        .addItem('Back',async()=>{
+            menu.resetMenu();
+            createAndStartMenu()
+        })
+        .addDelimiter('-', 40)
+        .start();
     }catch(err){
         menu.resetMenu();
         createAndStartMenu()
@@ -55,35 +55,33 @@ async function createKongaMenu(){
     const setup = require('../setup');
     menu.resetMenu();
     const errors = [];
+    const infos = setup.returnKongaSetupInfo();
     try{
-    const {isConnected} = await setup.canConnectToKongaDatabase();
-    menu.disableDefaultHeader()
-    .customHeader(()=>{
-        const infos = setup.returnKongaSetupInfo();
-        console.table(infos);
-        process.stdout.write(`Can connect to database: \x1b[32m${isConnected} \x1b[0m` + "\n");
-        
-    })
-    .addDelimiter('-', 40, 'Konga Setup')
-    .addItem('Run Kong Database Setup',async ()=>{
-        try{
-            await setup.runKongaDatabaseSetup();
-        }catch(err){
-            errors.push(err);
-        }
-    }).addItem('Show Errors',async ()=>{
-        console.log("Errors:",errors);
-    })
-    .addItem('Back',async()=>{
-        menu.resetMenu();
-        createAndStartMenu()
-    })
-    .addDelimiter('-', 40)
-    .start();
+        const {isConnected} = await setup.canConnectToKongaDatabase();
+        menu.disableDefaultHeader()
+        .customHeader(async ()=>{
+            console.table(infos);
+            process.stdout.write(`Can connect to database: \x1b[32m${isConnected} \x1b[0m` + "\n");
+        })
+        .addDelimiter('-', 40, 'Konga Setup')
+        .addItem('Run Kong Database Setup',async ()=>{
+            try{
+                await setup.runKongaDatabaseSetup();
+            }catch(err){
+                errors.push(err);
+            }
+        }).addItem('Show Errors',async ()=>{
+            console.log("Errors:",errors);
+        })
+        .addItem('Back',async()=>{
+            menu.resetMenu();
+            createAndStartMenu()
+        })
+        .addDelimiter('-', 40)
+        .start();
     }catch(err){
+        console.table(infos);
         console.log("Error:",err);
-        // menu.resetMenu();
-        // createAndStartMenu()
     }
 }
 function createAndStartMenu(){

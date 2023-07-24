@@ -19,32 +19,32 @@ async function createElkMenu(){
     menu.resetMenu();
     const errors = [];
     try{
-    const isConnected = await setup.checkElkIsReady(10,5000);
-    menu.disableDefaultHeader()
-    .customHeader(()=>{
         const infos = setup.returnSetupInfo();
-        console.table(infos);
-        process.stdout.write(`Can connect to elastic api: \x1b[32m${isConnected} \x1b[0m` + "\n");
-        
-    })
-    .addDelimiter('-', 40, 'ELK Setup')
-    .addItem('Run ELK Default Setup',async ()=>{
-        try{
-            await setup.defaultSetup();
-        }catch(err){
-            errors.push(err);
-        }
-    })
-    .addItem('Back',async()=>{
-        menu.resetMenu();
-        createAndStartMenu()
-    })
-    .addDelimiter('-', 40)
-    .start();
+        const isConnected = await setup.checkElkIsReady(10,5000);
+        menu.disableDefaultHeader()
+        .customHeader(()=>{
+            
+            console.table(infos);
+            process.stdout.write(`Can connect to elastic api: \x1b[32m${isConnected} \x1b[0m` + "\n");
+            
+        })
+        .addDelimiter('-', 40, 'ELK Setup')
+        .addItem('Run ELK Default Setup',async ()=>{
+            try{
+                await setup.defaultSetup();
+            }catch(err){
+                errors.push(err);
+            }
+        })
+        .addItem('Back',async()=>{
+            menu.resetMenu();
+            createAndStartMenu()
+        })
+        .addDelimiter('-', 40)
+        .start();
     }catch(err){
+        console.table(infos);
         console.log("Error:",err);
-        // menu.resetMenu();
-        // createAndStartMenu()
     }
 }
 function createAndStartMenu(){

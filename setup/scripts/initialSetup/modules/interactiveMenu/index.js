@@ -18,10 +18,10 @@ function killInteractiveProcess() {
 async function createSetupMenu(){
     menu.resetMenu();
     try{
+        const infos = setup.returnSetupInfo();
         const isConnected = await setup.checkKongAdminAPI(10,5000);
         menu.disableDefaultHeader()
         .customHeader(()=>{
-            const infos = setup.returnSetupInfo();
             console.table(infos);
             process.stdout.write(`Can connect to kong admin api: \x1b[32m${isConnected} \x1b[0m` + "\n");
             
@@ -65,9 +65,8 @@ async function createSetupMenu(){
         .addDelimiter('-', 40)
         .start();
     }catch(err){
+        console.table(infos);
         console.log("Error:",err);
-        menu.resetMenu();
-        reateAndStartMenu()
     }
 }
 function createAndStartMenu(){

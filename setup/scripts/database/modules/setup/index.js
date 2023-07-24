@@ -3,6 +3,8 @@
 const {canConnectToKongDatabase,returnKongSetupInfo,runKongDatabaseSetup} = require('../kong');
 const {canConnectToKongaDatabase,returnKongaSetupInfo,runKongaDatabaseSetup} = require('../konga');
 async function runDatabaseSetup(){
+    console.table(returnKongSetupInfo());
+    console.table(returnKongaSetupInfo());
     await runKongDatabaseSetup();
     await runKongaDatabaseSetup();
 }

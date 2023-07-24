@@ -97,10 +97,10 @@
 						"detached": true,
 						"profiles": ["setup"]
 					},
-					"envFile": "${workspaceFolder}/.env.example",
+					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",
 					"envFiles": [
-						"${workspaceFolder}/.env.example",
+						"${workspaceFolder}/.env.local",
 					],
 					"files": [
 						"${workspaceFolder}/docker-compose.yaml",
@@ -116,10 +116,10 @@
 						"detached": true,
 						"profiles": ["setup"]
 					},
-					"envFile": "${workspaceFolder}/.env.example",
+					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",
 					"envFiles": [
-						"${workspaceFolder}/.env.example",
+						"${workspaceFolder}/.env.local",
 					],
 					"files": [
 						"${workspaceFolder}/docker-compose.yaml",
@@ -136,10 +136,10 @@
 					 	"removeVolumes": true,
 					 	"volumes": true,
 					 },
-					"envFile": "${workspaceFolder}/.env.example",
+					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",
 					"envFiles": [
-						"${workspaceFolder}/.env.example",
+						"${workspaceFolder}/.env.local",
 					],
 					"files": [
 						"${workspaceFolder}/docker-compose.yaml",
@@ -156,10 +156,10 @@
 					 	"removeVolumes": true,
 					 	"volumes": true,
 					 },
-					"envFile": "${workspaceFolder}/.env.example",
+					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",
 					"envFiles": [
-						"${workspaceFolder}/.env.example",
+						"${workspaceFolder}/.env.local",
 					],
 					"files": [
 						"${workspaceFolder}/docker-compose.yaml",

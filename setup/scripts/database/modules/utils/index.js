@@ -1,8 +1,8 @@
 function buildConnectionString(options){
     const type = options.type;
     const connectionStringBuilder=[`${type}://`];
-    if(options.user) connectionStringBuilder.push(`${options.user}`);
-    if(options.password) connectionStringBuilder.push(`:${options.password}`);
+    if(options.user) connectionStringBuilder.push(encodeURIComponent(`${options.user}`));
+    if(options.password) connectionStringBuilder.push(`:${encodeURIComponent(options.password)}`);
     if(options.user || options.password) connectionStringBuilder.push('@');
     if(options.host) connectionStringBuilder.push(`${options.host}`);
     if(options.port) connectionStringBuilder.push(`:${options.port}`);
