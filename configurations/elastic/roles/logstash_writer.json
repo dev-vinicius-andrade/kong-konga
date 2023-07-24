@@ -1,0 +1,27 @@
+{
+    "cluster": [
+      "manage_index_templates",
+      "monitor",
+      "manage_ilm"
+    ],
+    "indices": [
+      {
+        "names": [
+          "logs-generic-default",
+          "logstash-*",
+          "ecs-logstash-*",
+          "kong-*",
+          "${LOGSTASH_ELASTICSEARCH_INDEX:-kong-%{+YYYY.MM.dd}}"
+        ],
+        "privileges": [
+          "auto_configure",
+          "write",
+          "create",
+          "create_index",
+          "manage",
+          "manage_ilm",
+          "all"
+        ]
+      }
+    ]
+  }

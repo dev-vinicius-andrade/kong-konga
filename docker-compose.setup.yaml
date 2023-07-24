@@ -1,0 +1,131 @@
+version: "3.9"
+
+# networks:
+#   kong-net:
+services:
+  kong-migrations:
+    image: kong
+    command: kong migrations bootstrap
+    depends_on:
+      db:
+        condition: service_started
+      setup-database:
+        condition: service_completed_successfully
+    environment:
+      KONG_DATABASE: ${KONG_DB_TYPE:-postgres}
+      KONG_PG_DATABASE: ${KONG_DB_DATABASE:-kong}
+      KONG_PG_HOST: ${KONG_DB_HOST:-db}
+      KONG_PG_PASSWORD: ${KONG_DB_PASSWORD}
+      KONG_PG_USER: ${KONG_DB_USER}
+    links:
+      - db:db
+    networks:
+      - kong-net
+    restart: on-failure
+    profiles:
+      - setup
+  kong:
+    depends_on:
+      db:
+        condition: service_started
+      kong-migrations:
+        condition: service_completed_successfully
+    networks:
+      - kong-net
+    profiles:
+      - setup
+  setup-database:
+    build:
+      context: setup/
+      target: kong-konga-database-setup
+      no_cache: false
+    #command: --interactive
+    depends_on:
+      db:
+        condition: service_started
+    volumes:
+      - ./setup/scripts/database/interactive.js:/app/interactive.js
+      - ./setup/scripts/database/modules:/app/modules
+    networks:
+      - kong-net
+    env_file:
+      - ./.env.example
+    stdin_open: true
+    tty: true
+    profiles:
+      - setup
+  setup:
+    build:
+      context: setup/
+      target: kong-konga-configurations-setup
+      no_cache: false
+    #command: --interactive
+    volumes:
+      #- ./configurations/kong/aditionalServices.json:/app/kong/aditionalServices.json
+      - ./container_volumes/setup/konga/data:/usr/share/konga/data
+      - ./setup/scripts/initialSetup/interactive.js:/app/interactive.js
+      - ./setup/scripts/initialSetup/modules:/app/modules
+      - ./configurations/kong/aditionalConfigurations.json:/usr/share/kong/aditionalConfigurations.json
+    depends_on:
+      kong:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+      kibana:
+        condition: service_started
+      logstash:
+        condition: service_started
+    networks:
+      - kong-net
+    env_file:
+      - ./.env.example
+    stdin_open: true
+    tty: true
+    profiles:
+      - setup
+  konga:
+    environment:
+      NODE_ENV: development
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    networks:
+      - kong-net
+    volumes:
+      - ./container_volumes/setup/konga/data:/usr/share/konga/data
+    env_file:
+      - ./.env.example
+    profiles:
+      - setup
+  setup-elk:
+    build:
+      context: setup/
+      target: kong-konga-elk-setup
+      no_cache: false
+    #command: --interactive
+    volumes:
+      - ./setup/scripts/elk/interactive.js:/app/interactive.js
+      - ./setup/scripts/elk/modules:/app/modules
+      - ./configurations/elastic/roles:/usr/share/elastic/roles:ro,Z
+      - ./configurations/elastic/users:/usr/share/elastic/users:ro,Z
+    networks:
+      - kong-net
+    depends_on:
+      elasticsearch:
+        condition: service_started
+    env_file:
+      - ./.env.example
+    profiles:
+      - setup
+  logstash:
+    networks:
+      - kong-net
+    depends_on:
+      setup-elk:
+        condition: service_completed_successfully
+  kibana:
+    networks:
+      - kong-net
+    depends_on:
+      setup-elk:
+        condition: service_completed_successfully

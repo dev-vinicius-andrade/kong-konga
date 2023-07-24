@@ -1,0 +1,17 @@
+---
+## Default Kibana configuration from Kibana base image.
+## https://github.com/elastic/kibana/blob/7.17/src/dev/build/tasks/os_packages/docker_generator/templates/kibana_yml.template.ts
+#
+server.name: kibana
+server.host: 0.0.0.0
+server.port: "${KIBANA_PORT}"
+server.basePath: "${KIBANA_ROUTE_PATH}"
+elasticsearch.hosts: [ "http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" ]
+
+monitoring.ui.container.elasticsearch.enabled: true
+monitoring.ui.container.logstash.enabled: true
+
+## X-Pack security credentials
+#
+elasticsearch.username: ${KIBANA_SYSTEM_USERNAME}
+elasticsearch.password: ${KIBANA_SYSTEM_PASSWORD}

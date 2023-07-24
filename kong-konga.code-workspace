@@ -1,0 +1,171 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"type": "chrome",
+				"request": "launch",
+				"name": "launch:konga:setup",
+				"url": "http://localhost:8000/proxy/manager/",
+				"presentation": {
+					"hidden": true,
+					"group": "",
+					"order": 1
+				},
+			},
+			{
+				"type": "chrome",
+				"request": "launch",
+				"name": "launch:konga",
+				"url": "http://localhost:8000/proxy/manager/",
+				"presentation": {
+					"hidden": true,
+					"group": "",
+					"order": 1
+				},
+				"serverReadyAction":{
+					"action": "openExternally",
+					"pattern": "/Container.*konga.*started/gm"
+				},
+			},
+			{
+				"type": "chrome",
+				"request": "launch",
+				"name": "launch:kibana",
+				"url": "http://localhost:8000/proxy/logs/",
+				"presentation": {
+					"hidden": true,
+					"group": "",
+					"order": 1
+				},
+				"serverReadyAction":{
+					"action": "openExternally",
+					"pattern": "/Container.*kibana.*started/gm"
+					
+				},
+				"postDebugTask": "stop:setup"
+
+			}
+		],
+		"compounds": [{
+			"name": "Launch as setup",
+			"preLaunchTask": "launch:setup",
+			"stopAll": true,
+			"configurations": [
+				"launch:konga:setup",
+				"launch:kibana"
+			],
+
+			"presentation": {
+				"hidden": false,
+				"group": "Setup",
+				"order": 0
+			}
+		 },
+		 {
+			"name": "Launch",
+			"preLaunchTask": "launch",
+			"stopAll": true,
+			"configurations": [
+				"launch:konga",
+				"launch:kibana"
+			],
+			"presentation": {
+				"hidden": false,
+				"group": "Release",
+				"order": 1
+			}
+		 }
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"type": "docker-compose",
+				"label": "launch",
+				"dockerCompose": {
+					"up": {
+						"build": false,
+						"detached": true,
+						"profiles": ["setup"]
+					},
+					"envFile": "${workspaceFolder}/.env.example",
+					"projectName": "kong-konga-setup",
+					"envFiles": [
+						"${workspaceFolder}/.env.example",
+					],
+					"files": [
+						"${workspaceFolder}/docker-compose.yaml",
+					]
+				},
+			},
+			{
+				"type": "docker-compose",
+				"label": "launch:setup",
+				"dockerCompose": {
+					"up": {
+						"build": false,
+						"detached": true,
+						"profiles": ["setup"]
+					},
+					"envFile": "${workspaceFolder}/.env.example",
+					"projectName": "kong-konga-setup",
+					"envFiles": [
+						"${workspaceFolder}/.env.example",
+					],
+					"files": [
+						"${workspaceFolder}/docker-compose.yaml",
+						"${workspaceFolder}/docker-compose.setup.yaml"
+					]
+				},
+			},
+			{
+				"type": "docker-compose",
+				"label": "stop:setup",
+				"dockerCompose": {
+					 "down": {
+					 	"removeOrphans": true,
+					 	"removeVolumes": true,
+					 	"volumes": true,
+					 },
+					"envFile": "${workspaceFolder}/.env.example",
+					"projectName": "kong-konga-setup",
+					"envFiles": [
+						"${workspaceFolder}/.env.example",
+					],
+					"files": [
+						"${workspaceFolder}/docker-compose.yaml",
+						"${workspaceFolder}/docker-compose.setup.yaml"
+					]
+				}
+			},
+			{
+				"type": "docker-compose",
+				"label": "stop",
+				"dockerCompose": {
+					 "down": {
+					 	"removeOrphans": true,
+					 	"removeVolumes": true,
+					 	"volumes": true,
+					 },
+					"envFile": "${workspaceFolder}/.env.example",
+					"projectName": "kong-konga-setup",
+					"envFiles": [
+						"${workspaceFolder}/.env.example",
+					],
+					"files": [
+						"${workspaceFolder}/docker-compose.yaml",
+					]
+				}
+			},
+		]
+	}
+}

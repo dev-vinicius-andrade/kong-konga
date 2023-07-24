@@ -1,0 +1,34 @@
+[
+    {
+        "name":"api-sample",
+        "protocol":"http",
+        "port":5050,
+        "host":"sample-api",
+        "path":null,
+        "routes":[
+            {
+                "path":"/api/sample",
+                "host":null,
+                "methods":null,
+                "port":null,
+                "protocols":[
+                    "http",
+                    "https"
+                ],
+                "regex_priority":0,
+
+                "strip_path":true,
+                "preserve_host":true
+            }],
+        "plugins":[
+            {
+                "name":"udp-log",
+                "config":{
+                    "host":"logstash",
+                    "port":5000
+                },
+                "enabled":true
+            }
+        ]
+    }
+]

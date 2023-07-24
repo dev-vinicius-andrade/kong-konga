@@ -1,0 +1,15 @@
+[
+    {
+        "username":"${LOGSTASH_ELASTICSEARCH_USERNAME:-logstash_internal}",
+        "password":"${LOGSTASH_ELASTICSEARCH_PASSWORD:-changeme}",
+        "roles":[
+            "logstash_writer"
+        ]
+    },
+    {
+        "username":"${KIBANA_SYSTEM_USERNAME:-kibana_system}",
+        "password":"${KIBANA_SYSTEM_PASSWORD:-changeme}",
+        "roles":[
+        ]
+    }
+]
