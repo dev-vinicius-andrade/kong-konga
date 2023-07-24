@@ -1,5 +1,4 @@
 version: "3.9"
-
 networks:
   kong-net:
 services:
@@ -26,9 +25,9 @@ services:
       - kong-net
     restart: unless-stopped
     volumes:
-      - ./container_volumes/konga/data:/app/kongadata
+      - konga-data:/app/kongadata
     env_file:
-      - ./.env.example
+      - ./.env.local
   kong:
     image: "kong"
     container_name: kong
@@ -57,9 +56,9 @@ services:
       - "${KONG_HTTPS_PORT}:443/tcp"
     restart: unless-stopped
     env_file:
-      - ./.env.example
+      - ./.env.local
     volumes:
-      - ./container_volumes/kong/banner/conf:/opt/bitnami/apps/bitnami/banner/conf
+      - kong-banner-conf:/opt/bitnami/apps/bitnami/banner/conf
   db:
     image: postgres:11-bullseye
     environment:
@@ -74,9 +73,9 @@ services:
     networks:
       - kong-net
     volumes:
-      - ./container_volumes/db/data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     env_file:
-      - ./.env.example
+      - ./.env.local
   sample-api:
     image: vad1mo/hello-world-rest
     container_name: sample-api
@@ -85,7 +84,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     volumes:
-      - ./container_volumes/elasticsearch/data:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     environment:
       node.name: elasticsearch
       network.host: 0.0.0.0
@@ -97,7 +96,7 @@ services:
       - kong-net
     restart: unless-stopped
     env_file:
-      - ./.env.example
+      - ./.env.local
   logstash:
     image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
     volumes:
@@ -114,7 +113,7 @@ services:
     links:
       - elasticsearch
     env_file:
-      - ./.env.example
+      - ./.env.local
   kibana:
     image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
     volumes:
@@ -130,4 +129,29 @@ services:
     links:
       - elasticsearch
     env_file:
-      - ./.env.example
+      - ./.env.local
+volumes:
+  konga-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/konga/data
+  kong-banner-conf:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/kong/banner/conf
+  db-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/db/data
+  elasticsearch-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/elasticsearch/data
