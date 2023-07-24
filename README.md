@@ -29,7 +29,9 @@ chmod +x ./scripts/*.sh
 
 If you want to override the default volumes path you can use the command
 ```bash
- container_volume="your/desired/path" && mkdir -p "$container_volume" && sed -i "s|device: ./container_volumes|device: $container_volume|g" docker-compose.yaml
+ container_volume="/your/desired/path" sed -i "s|device: ./container_volumes|device: $container_volume|g" docker-compose.yaml &&  grep -oP '(?<=device: ).*' docker-compose.yaml | while read -r path; do \
+   mkdir -p "$path" \
+done
 ```
 ## Recommendations 
 
