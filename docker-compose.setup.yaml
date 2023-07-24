@@ -35,7 +35,7 @@ services:
       context: setup/
       target: kong-konga-database-setup
       no_cache: false
-    command: --interactive
+    #command: --interactive
     depends_on:
       db:
         condition: service_started
