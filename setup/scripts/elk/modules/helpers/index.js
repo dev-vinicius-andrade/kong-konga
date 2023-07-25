@@ -11,7 +11,7 @@ function replaceEnvironmentVariables(jsonContent) {
     updatedContent = updatedContent.replace(regex, (match, envVar, defaultValue) => {
     console.log(envVar)
       const value = process.env[envVar] || (defaultValue ? getDefaultValue(defaultValue) : null);
-      if(value.endsWith("}")) return value.slice(0,-1)
+      if(value?.endsWith("}")) return value.slice(0,-1)
       return value;
     });
   

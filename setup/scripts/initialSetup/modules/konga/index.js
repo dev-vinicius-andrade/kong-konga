@@ -31,13 +31,15 @@ async function createKongaAuthKey({kongHost,kongAdminPort},serviceName,serviceHo
     try {
       const response =keyAuth?{data:{key:keyAuth}}:await axios.post(`http://${kongHost}:${kongAdminPort}/consumers/${kongConsumerKongaId}/key-auth`);
       keyAuth = response.data.key;
-
-      console.log('__________________ GENERATED KEY _________________');
       console.log();
-      console.log(keyAuth);
       console.log();
       console.log('__________________ GENERATED KEY _________________');
-
+      console.log();
+      console.table({keyAuth});
+      console.log();
+      console.log('__________________ GENERATED KEY _________________');
+      console.log();
+      console.log();
 
       await fs.writeFile('/usr/share/konga/data/kong_auth_key.key', keyAuth);
       return {keyAuth,kongConsumerKongaId};
@@ -54,32 +56,30 @@ async function createKongaDefaultUser({kongHost,kongAdminPort},{username,email,f
     await fs.mkdir('/usr/share/konga/data', { recursive: true });
 
     const defaultUsersContent = `module.exports = [
-    {
-        "username": "${username}",
-        "email": "${email}",
-        "firstName": "${firstName}",
-        "node_id":  "http://${kongHost}:${kongAdminPort}",
-        "admin": true,
-        "active" : true, 
-        "password": "${password}"
-    }
-];`;
+      {
+          "username": "${username}",
+          "email": "${email}",
+          "firstName": "${firstName}",
+          "node_id":  "http://${kongHost}:${kongAdminPort}",
+          "admin": true,
+          "active" : true, 
+          "password": "${password}"
+      }
+    ];`;
     
     // Write the default_users_db.data file
     await fs.writeFile('/usr/share/konga/data/default_users_db.data', defaultUsersContent);
-
-    console.log('Konga default user created.');
-    console.log('__________________ KONGA USER DATA _________________');
     console.log();
-    console.log(`USERNAME: ${kongHost}`);
-    console.log(`EMAIL: ${email}`);
-    console.log(`FIRST NAME: ${firstName}`);
-    console.log(`NODE ID: http://${kongHost}:${kongAdminPort}`);
-    console.log('ADMIN: true');
-    console.log('ACTIVE: true');
-    console.log(`PASSWORD: ${password}`);
     console.log();
     console.log('__________________ KONGA USER DATA _________________');
+    console.log();
+    console.log();
+    console.table({username,email,firstName,password});
+    console.log();
+    console.log();
+    console.log('__________________ KONGA USER DATA _________________');
+    console.log();
+    console.log();
   } catch (error) {
     console.error('Error:', error);
   }
@@ -90,29 +90,37 @@ async function createKongaKongDefaultSeed({kongHost,kongAdminPort},kongApiKey) {
     await fs.mkdir('/usr/share/konga/data', { recursive: true });
 
     const defaultSeedContent = `module.exports = [
-    {
-        "name": "${kongHost}",
-        "type": "key_auth",
-        "kong_admin_url": "http://${kongHost}:${kongAdminPort}",
-        "kong_api_key": "${kongApiKey}",
-        "health_checks": false,
-        "active": true
-    }
-];`;
+      {
+          "name": "${kongHost}",
+          "type": "key_auth",
+          "kong_admin_url": "http://${kongHost}:${kongAdminPort}",
+          "kong_api_key": "${kongApiKey}",
+          "health_checks": false,
+          "active": true
+      }
+    ];`;
 
     // Write the default_kong_node.data file
     await fs.writeFile('/usr/share/konga/data/default_kong_node.data', defaultSeedContent);
 
     console.log('Konga kong default seed created.');
-    console.log('__________________ KONGA KONG DEFAULT SEED DATA _________________');
     console.log();
-    console.log(`NAME: ${kongHost}`);
-    console.log('TYPE: key_auth');
-    console.log(`KONG ADMIN URL: http://${kongHost}:${kongAdminPort}`);
-    console.log(`KONG API KEY: ${kongApiKey}`);
-    console.log('HEALTH CHECKS: false');
     console.log();
     console.log('__________________ KONGA KONG DEFAULT SEED DATA _________________');
+    console.log();
+    console.log();
+    console.table({
+      NAME: kongHost,
+      TYPE: 'key_auth',
+      'KONG ADMIN URL': `http://${kongHost}:${kongAdminPort}`,
+      'KONG API KEY': kongApiKey,
+      'HEALTH CHECKS': false,
+    })
+    console.log();
+    console.log();
+    console.log('__________________ KONGA KONG DEFAULT SEED DATA _________________');
+    console.log();
+    console.log();
   } catch (error) {
     console.error('Error:', error.message);
   }

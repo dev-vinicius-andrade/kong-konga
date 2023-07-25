@@ -1,6 +1,7 @@
 version: "3."
 networks:
   kong-net:
+  db-net:
 services:
   konga:
     image: pantsel/konga
@@ -26,6 +27,7 @@ services:
     restart: unless-stopped
     volumes:
       - konga-data:/app/kongadata
+
     env_file:
       - ./.env.local
   kong:
@@ -72,6 +74,7 @@ services:
     restart: unless-stopped
     networks:
       - kong-net
+      - db-net
     volumes:
       - db-data:/var/lib/postgresql/data
     env_file:
@@ -130,6 +133,32 @@ services:
       - elasticsearch
     env_file:
       - ./.env.local
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    env_file:
+      - ./.env.local
+    depends_on:
+      - db
+    networks:
+      - db-net
+      - kong-net
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - "${PORTAINER_EXPOSED_HTTP_PORT}:${PORTAINER_INTERNAL_HTTP_PORT}"
+      - "${PORTAINER_EXPOSED_HTTPS_PORT}:${PORTAINER_INTERNAL_HTTPS_PORT}"
+    networks:
+      - kong-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    restart: unless-stopped
+    env_file:
+      - ./.env.local
+
 volumes:
   konga-data:
     driver: local
@@ -137,6 +166,12 @@ volumes:
       o: bind
       type: none
       device: ./container_volumes/konga/data
+  konga-usr-share-konga-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/konga/usr/share/konga/data
   kong-banner-conf:
     driver: local
     driver_opts:
@@ -149,6 +184,18 @@ volumes:
       o: bind
       type: none
       device: ./container_volumes/db/data
+  pgadmin-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/pgadmin/data
+  portainer-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./container_volumes/portainer/data
   elasticsearch-data:
     driver: local
     driver_opts:

@@ -43,7 +43,7 @@ async function serviceExists({kongHost,kongAdminPort},serviceName){
     throw error;
   }
 }
-async function createService({kongHost,kongAdminPort},serviceName,serviceHost,servicePort){
+async function createService({kongHost,kongAdminPort},serviceName,serviceHost,servicePort,{path,protocol}){
     console.log(`Creating ${serviceName} service...`);
     console.log(`With host: ${serviceHost}`);
     console.log(`With port: ${servicePort}`);
@@ -56,6 +56,9 @@ async function createService({kongHost,kongAdminPort},serviceName,serviceHost,se
         name: serviceName,
         host: serviceHost,
         port: parseInt(servicePort??80),
+        path,
+        protocol:protocol??'http'
+
       });
       if(serviceResponse.status===201 || serviceResponse.status===200)
       {
@@ -108,15 +111,24 @@ async function createConsumer({kongHost,kongAdminPort},serviceUser,serviceCustom
     return {error}
   }
 }
-async function pluginExists({kongHost,kongAdminPort},pluginName){
+async function pluginExists({kongHost,kongAdminPort},pluginName,{consumer,service,route}){
   try {
-    const response = await axios.get(`http://${kongHost}:${kongAdminPort}/plugins/${pluginName}`);
-    if(response.status===200) {
-      console.log(`Plugin ${pluginName} already exists...`);
-      return response.data;
-    }
+    let endpoint = `http://${kongHost}:${kongAdminPort}`;
+    if(consumer && !service && !route) endpoint+=`/consumers/${consumer}`;
+    if(service && !consumer && !route) endpoint+=`/services/${service}`;
+    if(route && !consumer && !service) endpoint+=`/routes/${route}`;
+
+    const response = await axios.get(`${endpoint}/plugins`);
+    const plugins = response?.data?.data?.filter(plugin=>plugin.name===pluginName);
+    if(!plugins) return false;
+
+    if(consumer && !service && !route) return plugins.filter(plugin=>plugin.consumer.id===consumer||plugin.consumer.username===consumer);
+    if(service && !consumer && !route) return plugins.filter(plugin=>plugin.service.id===service||plugin.service.name===service);
+    if(route && !consumer && !service) return plugins.filter(plugin=>plugin.route.id===route||plugin.route.paths.includes(route));
     return false;
   } catch (error) {
+    console.log(`Plugin exists error:`);
+    console.log(error);
     if(error.response?.status===404) return false;
     console.error('Error checking if plugin exists:', error.message,error.data);
     throw error;
@@ -126,7 +138,11 @@ async function createPlugin({kongHost,kongAdminPort},pluginName,pluginConfig,{ta
     console.log(`Creating ${pluginName} plugin...`);
     
     try {
-      const existsResponse = await pluginExists({kongHost,kongAdminPort},pluginName);
+      const existsResponse = await pluginExists({kongHost,kongAdminPort},pluginName,{
+        consumer:consumer?.username??consumer?.id,
+        service:service?.name??service?.id,
+        route:route?.id??route?.paths[0]
+      });
       if(existsResponse) return existsResponse;
       
       const response=  await axios.post(`http://${kongHost}:${kongAdminPort}/plugins/`, {

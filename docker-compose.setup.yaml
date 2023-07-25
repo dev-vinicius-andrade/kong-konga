@@ -2,24 +2,25 @@ version: "3.9"
 
 services:
   kong-migrations:
-    image: kong
-    command: kong migrations bootstrap
+    command: kong migrations bootstrap --help
+    build:
+      context: setup/
+      target: kong-migrations
+      no_cache: true
     depends_on:
       db:
         condition: service_started
       setup-database:
         condition: service_completed_successfully
-    environment:
-      KONG_DATABASE: ${KONG_DB_TYPE:-postgres}
-      KONG_PG_DATABASE: ${KONG_DB_DATABASE:-kong}
-      KONG_PG_HOST: ${KONG_DB_HOST:-db}
-      KONG_PG_PASSWORD: ${KONG_DB_PASSWORD}
-      KONG_PG_USER: ${KONG_DB_USER}
+    env_file:
+      - ./.env.local
     networks:
       - kong-net
     restart: on-failure
     profiles:
       - setup
+    stdin_open: true
+    tty: true
   kong:
     depends_on:
       db:
@@ -57,10 +58,10 @@ services:
       no_cache: false
     #command: --interactive
     volumes:
-      - konga-data:/usr/share/konga/data
+      - konga-usr-share-konga-data:/usr/share/konga/data
       - ./setup/scripts/initialSetup/interactive.js:/app/interactive.js
       - ./setup/scripts/initialSetup/modules:/app/modules
-      - ./configurations/kong/aditionalConfigurations.json:/usr/share/kong/aditionalConfigurations.json
+      - ./configurations/kong/aditionalConfigurations:/usr/share/kong/aditionalConfigurations
     depends_on:
       kong:
         condition: service_started
@@ -88,6 +89,8 @@ services:
       - kong-net
     env_file:
       - ./.env.local
+    volumes:
+      - konga-usr-share-konga-data:/usr/share/konga/data
     profiles:
       - setup
   setup-elk:
@@ -122,12 +125,9 @@ services:
     depends_on:
       setup-elk:
         condition: service_completed_successfully
-  portainer:
-    image: portainer/portainer-ce:latest
+  db:
     ports:
-      - "${PORTAINER_EXPOSED_PORT}:9443"
-    profiles:
-      - setup
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
+      - "5432:5432"
+  pgadmin:
+    ports:
+      - "${PGADMIN_SETUP_EXPOSED_PORT}:${PGADMIN_INTERNAL_LISTEN_PORT}"
