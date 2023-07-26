@@ -43,8 +43,7 @@ copy_file_with_overwrite_question(){
         echo "Ovewriting $destination_file" >&2
         cp "$source_file" "$destination_file"
     else
-        echo "Exiting" >&2
-        return
+        echo "Ignoring" >&2
     fi
   else
     cp "$source_file" "$destination_file"
