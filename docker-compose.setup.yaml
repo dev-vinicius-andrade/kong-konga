@@ -196,6 +196,22 @@ services:
       - ./.env.local
     profiles:
       - setup
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      node.name: elasticsearch
+      network.host: 0.0.0.0
+      xpack.security.enabled: true
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+    networks:
+      - kong-net
+    restart: unless-stopped
+    env_file:
+      - ./.env.local
   db:
     image: postgres:11-bullseye
     environment:

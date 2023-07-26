@@ -79,7 +79,6 @@ services:
       - db-data:/var/lib/postgresql/data
     env_file:
       - ./.env.local
-
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     volumes:
