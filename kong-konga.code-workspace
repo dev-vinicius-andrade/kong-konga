@@ -104,6 +104,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
+						"${workspaceFolder}/docker-compose-networks.yaml",
 						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.yaml",
 					]
@@ -124,6 +125,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
+						"${workspaceFolder}/docker-compose-networks.yaml",
 						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.setup.yaml"
 					]
@@ -144,6 +146,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
+						"${workspaceFolder}/docker-compose-networks.yaml",
 						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.setup.yaml"
 					]

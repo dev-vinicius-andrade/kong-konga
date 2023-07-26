@@ -14,4 +14,4 @@ if [[ ! -f "../.env.local" ]]; then
     exit 1
 fi
 echo "Running as local"
-docker compose -f "$(pwd)/docker-compose.volumes.local.yaml" -f "$(pwd)/docker-compose.local.yaml" --env-file "$(pwd)/.env.local" up -d
+docker compose -f docker-compose-networks.yaml -f "$(pwd)/docker-compose.volumes.local.yaml" -f "$(pwd)/docker-compose.local.yaml" --env-file "$(pwd)/.env.local" up -d

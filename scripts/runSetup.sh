@@ -14,4 +14,4 @@ if [[ ! -f "$(pwd)/.env.local" ]]; then
     exit 1
 fi
 echo "Running as setup"
-docker compose --profile setup -f "$(pwd)/docker-compose.volumes.local.yaml" -f "$(pwd)/docker-compose.setup.local.yaml" --env-file "$(pwd)/.env.local" up -d
+docker compose --profile setup -f docker-compose-networks.yaml -f "$(pwd)/docker-compose.volumes.local.yaml" -f "$(pwd)/docker-compose.setup.local.yaml" --env-file "$(pwd)/.env.local" up -d
