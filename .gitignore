@@ -4,3 +4,5 @@ docker-compose.setup.local.yaml
 docker-compose.volumes.local.yaml
 .env.*
 !.env.example
+node_modules
+**/node_modules
