@@ -5,8 +5,7 @@ create_recursive_docker_compose_volumes_local(){
       echo "Creating $path"
       mkdir -p "$path"
     else 
-      echo "Path $path already exists do you want to delete it? [y/n]"
-      read -r delete
+      read "Path $path already exists do you want to delete it? [y/n]" -r delete
       if [[ "$delete" == "y" ]]; then
         echo "Deleting $path"
         rm -Rf "$path"
@@ -37,8 +36,7 @@ copy_file_with_overwrite_question(){
   local source_file=$1
   local destination_file=$2
   if [[ -f "$destination_file" ]]; then
-    echo "$destination_file already exists do you want to overwrite it? [y/n]" >&2
-    read -r answer
+    read "$destination_file already exists do you want to overwrite it? [y/n]" -r answer
     if [[ "$answer" == "y" ]]; then
         echo "Ovewriting $destination_file" >&2
         cp "$source_file" "$destination_file"

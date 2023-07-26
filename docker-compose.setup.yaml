@@ -1,5 +1,8 @@
 version: "3.9"
 
+networks:
+  kong-net:
+  db-net:
 services:
   kong-migrations:
     command: kong migrations bootstrap --help
