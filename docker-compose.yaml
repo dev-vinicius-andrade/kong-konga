@@ -148,44 +148,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./.env.local
-volumes:
-  konga-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./container_volumes/konga/data
-  konga-usr-share-konga-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./container_volumes/konga/usr/share/konga/data
-  kong-banner-conf:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./container_volumes/kong/banner/conf
-  db-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./container_volumes/db/data
-  pgadmin-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./container_volumes/pgadmin/data
-  portainer-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./container_volumes/portainer/data
-  elasticsearch-data:
+
     driver: local
     driver_opts:
       o: bind
