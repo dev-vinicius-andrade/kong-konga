@@ -4,9 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 .local/
 container_volumes
-docker-compose.*.yaml
-docker-compose.setup.*.yaml
-docker-compose.volumes.*.yaml
+docker-compose.local.yaml
+docker-compose.setup.local.yaml
+docker-compose.volumes.local.yaml
 .env.*
 !.env.example
 # User-specific files
