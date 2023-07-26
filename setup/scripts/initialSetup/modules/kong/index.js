@@ -43,7 +43,7 @@ async function serviceExists({kongHost,kongAdminPort},serviceName){
     throw error;
   }
 }
-async function createService({kongHost,kongAdminPort},serviceName,serviceHost,servicePort,{path,protocol}){
+async function createService({kongHost,kongAdminPort},serviceName,serviceHost,servicePort,{path,protocol}={}){
     console.log(`Creating ${serviceName} service...`);
     console.log(`With host: ${serviceHost}`);
     console.log(`With port: ${servicePort}`);
@@ -119,9 +119,11 @@ async function pluginExists({kongHost,kongAdminPort},pluginName,{consumer,servic
     if(route && !consumer && !service) endpoint+=`/routes/${route}`;
 
     const response = await axios.get(`${endpoint}/plugins`);
+    
     const plugins = response?.data?.data?.filter(plugin=>plugin.name===pluginName);
+    
     if(!plugins) return false;
-
+    if(!consumer && !service && !route) return true;
     if(consumer && !service && !route) return plugins.filter(plugin=>plugin.consumer.id===consumer||plugin.consumer.username===consumer);
     if(service && !consumer && !route) return plugins.filter(plugin=>plugin.service.id===service||plugin.service.name===service);
     if(route && !consumer && !service) return plugins.filter(plugin=>plugin.route.id===route||plugin.route.paths.includes(route));

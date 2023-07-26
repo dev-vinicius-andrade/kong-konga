@@ -14,7 +14,7 @@ async function createPostgresConnection(options){
         }
         catch(err){
             console.log("Error connecting to database:",err);
-            console.log("Retrying in 5 seconds...");
+            console.log(`Retrying in ${retryIntervalSeconds} seconds...`);
             await new Promise(resolve => setTimeout(resolve, retryIntervalSeconds * 1000));
         }
     }

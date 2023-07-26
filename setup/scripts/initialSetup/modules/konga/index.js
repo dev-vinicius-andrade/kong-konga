@@ -3,6 +3,7 @@ const axios = require('axios');
 const {createService,createRoute,createConsumer} = require('../kong');
 const fs = require('fs').promises;
 const {existsSync} = require('fs');
+const {logInformationAsTable} = require('../helpers')
 
 
 async function createKongaAuthKey({kongHost,kongAdminPort},serviceName,serviceHost,servicePort,serviceUser, {routePath,routeHost},serviceCustomId) {
@@ -16,7 +17,7 @@ async function createKongaAuthKey({kongHost,kongAdminPort},serviceName,serviceHo
     }
 
 
-    const createServiceResponse=  await createService({kongHost,kongAdminPort},serviceName, serviceHost, servicePort);
+    const createServiceResponse=  await createService({kongHost,kongAdminPort},serviceName, serviceHost, servicePort,{});
     if(createServiceResponse.error) throw new Error(`Error creating service ${serviceName}: ${createServiceResponse.error}`);
    
     // Create service route
@@ -31,16 +32,7 @@ async function createKongaAuthKey({kongHost,kongAdminPort},serviceName,serviceHo
     try {
       const response =keyAuth?{data:{key:keyAuth}}:await axios.post(`http://${kongHost}:${kongAdminPort}/consumers/${kongConsumerKongaId}/key-auth`);
       keyAuth = response.data.key;
-      console.log();
-      console.log();
-      console.log('__________________ GENERATED KEY _________________');
-      console.log();
-      console.table({keyAuth});
-      console.log();
-      console.log('__________________ GENERATED KEY _________________');
-      console.log();
-      console.log();
-
+      logInformationAsTable("GENERATED KEY",{keyAuth})
       await fs.writeFile('/usr/share/konga/data/kong_auth_key.key', keyAuth);
       return {keyAuth,kongConsumerKongaId};
     } catch (error) {
@@ -104,23 +96,13 @@ async function createKongaKongDefaultSeed({kongHost,kongAdminPort},kongApiKey) {
     await fs.writeFile('/usr/share/konga/data/default_kong_node.data', defaultSeedContent);
 
     console.log('Konga kong default seed created.');
-    console.log();
-    console.log();
-    console.log('__________________ KONGA KONG DEFAULT SEED DATA _________________');
-    console.log();
-    console.log();
-    console.table({
+    logInformationAsTable("KONGA KONG DEFAULT SEED DATA",{
       NAME: kongHost,
       TYPE: 'key_auth',
       'KONG ADMIN URL': `http://${kongHost}:${kongAdminPort}`,
       'KONG API KEY': kongApiKey,
       'HEALTH CHECKS': false,
     })
-    console.log();
-    console.log();
-    console.log('__________________ KONGA KONG DEFAULT SEED DATA _________________');
-    console.log();
-    console.log();
   } catch (error) {
     console.error('Error:', error.message);
   }

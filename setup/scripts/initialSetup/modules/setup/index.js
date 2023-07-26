@@ -9,7 +9,7 @@ const { promisify } = require('util');
 const sleep = promisify(setTimeout);
 const fs = require('fs').promises;
 const {existsSync} = require('fs');
-const {overrideEnvironmentVariablesInFiles} = require('../helpers')
+const {overrideEnvironmentVariablesInFiles,logInformationAsTable} = require('../helpers')
 const {join: joinPath} = require('path');
 const setupInfo ={
   KONG_HOST:process.env.KONG_HOST,
@@ -28,13 +28,6 @@ const setupInfo ={
   KONGA_ADMIN_FIRST_NAME : process.env.KONGA_ADMIN_FIRST_NAME,
   KONGA_ADMIN_PASSWORD : process.env.KONGA_ADMIN_PASSWORD,
   KONGA_SERVICE_CUSTOM_ID:process.env.KONGA_SERVICE_CUSTOM_ID   ?? require('uuid').v4(),
-  KIBANA_ROUTE_PATH:process.env.KIBANA_ROUTE_PATH,
-  KIBANA_ROUTE_HOST:process.env.KIBANA_ROUTE_HOST,
-  KIBANA_PORT: process.env.KIBANA_PORT ?? 5601,
-  KIBANA_SERVICE_NAME:process.env.KIBANA_SERVICE_NAME ?? "kibana",
-  KIBANA_SERVICE_HOST:process.env.KIBANA_SERVICE_HOST ?? "kibana",
-  LOGSTASH_HOST:process.env.LOGSTASH_HOST ?? "logstash",
-  KONG_LOGSTASH_GLOBAL_PLUGIN_START_ENABLED:process.env.KONG_LOGSTASH_GLOBAL_PLUGIN_START_ENABLED ?? false
 }
 const kongOptions = {
     kongHost:setupInfo.KONG_HOST,
@@ -101,7 +94,8 @@ async function createKongaConfigurations(){
     const {exists,error} = await createService(kongOptions,
     setupInfo.KONGA_SERVICE_NAME,
     setupInfo.KONGA_SERVICE_HOST,
-    setupInfo.KONGA_SERVICE_PORT
+    setupInfo.KONGA_SERVICE_PORT,
+    {}
     )
     if(exists) {
         console.log(`Service ${setupInfo.KONGA_SERVICE_NAME} already exists...`);
@@ -125,16 +119,15 @@ async function defaultSetup(){
         console.error("Kong Admin API is not ready. Exiting.");
         process.exit(1);
     }
-    const{keyAuth,kongConsumerKongaId} = await createKongaConfigurations();
-    await createKibanaService();   
+    await createKongaConfigurations();
     await createKongaDefaultUser(kongOptions,{
         username:setupInfo.KONGA_ADMIN_USER,
         email:setupInfo.KONGA_ADMIN_EMAIL,
         firstName:setupInfo.KONGA_ADMIN_FIRST_NAME,
         password:setupInfo.KONGA_ADMIN_PASSWORD
     });
-    await createGlobalLogstashPlugin(kongConsumerKongaId);
     await createAditionalConfigurations();
+    console.log("Default setup finished successfully...");
 }
 async function createGlobalLogstashPlugin(consumerId){
     if(!setupInfo.LOGSTASH_HOST) {
@@ -160,36 +153,8 @@ async function createGlobalLogstashPlugin(consumerId){
         console.error('Error creating the global logstash plugin:', error.message);
     }
 }
-async function createKibanaService(){
-    if(!setupInfo.KIBANA_SERVICE_NAME) {
-        console.log("Kibana service name not provided. Skipping...");
-        return;
-    }
-    if(!setupInfo.KIBANA_ROUTE_PATH && !setupInfo.KIBANA_ROUTE_HOST){
-        console.log("Kibana route path and host not provided. Skipping...");
-        return;
-    }
-    
-    const {exists,error} = await createService(
-    kongOptions,
-      setupInfo.KIBANA_SERVICE_NAME,
-      setupInfo.KIBANA_SERVICE_HOST,
-      setupInfo.KIBANA_PORT
-    )
-    if(exists) {
-        console.log(`Service ${setupInfo.KIBANA_SERVICE_NAME} already exists...`);
-        return;
-    };
-    if(error) throw error;
-    await createRoute(
-    kongOptions,
-      setupInfo.KIBANA_SERVICE_NAME,
-      {
-        routePath:setupInfo.KIBANA_ROUTE_PATH,
-        routeHost:setupInfo.KIBANA_ROUTE_HOST
-      })
-}
-function validateAditionalServicePluginsConfiguration(configuration) {
+
+function validateAditionalConfigurationPluginsConfiguration(configuration) {
     let currentValidationPluginIndex=0;
     for (const plugin of configuration.plugins) {
         if (!plugin.name) throw new Error(`You must provide a plugin name in the plugin index[${currentValidationPluginIndex}]`);
@@ -198,16 +163,32 @@ function validateAditionalServicePluginsConfiguration(configuration) {
     }
 }
 async function validateAditionalConfiguration(configuration){
-    if(!configuration.name) throw new Error(`You must provide a configuration name`);
-    if(!configuration.protocol) throw new Error("You must provide a configuration protocol");
-    if(!configuration.host) throw new Error("You must provide a configuration host");
-    if(configuration.routes)
-        for(const route of configuration.routes){
-            if(!route.path && !route.host) throw new Error("You must provide either a route path or a route host");
+    console.log(`Validating global aditional service configuration...`);
+    if(configuration.services && configuration.services.length>0) 
+        for(const service of  configuration.services){
+            validateAditionalServiceConfiguration(service);
+            validateAditionalServiceRoutes(service);
+            if(!service.plugins || service.plugins.length===0) return;
+            validateAditionalConfigurationPluginsConfiguration(service);
         }
-    if(!configuration.plugins) return;
-    validateAditionalServicePluginsConfiguration(configuration);
+    console.log(`Validating global aditional service configuration finished...`);
+    console.log(`Validating global aditional configuration plugins...`);
+    validateAditionalConfigurationPluginsConfiguration(configuration);
+    console.log(`Validating global aditional configuration plugins finished...`);
+
 }
+function validateAditionalServiceConfiguration(service) {
+    if (!service.name) throw new Error(`You must provide a configuration name`);
+    if (!service.protocol) throw new Error("You must provide a configuration protocol");
+    if (!service.host) throw new Error("You must provide a configuration host");
+}
+function validateAditionalServiceRoutes(service) {
+    if (service.routes && service.routes.length > 0)
+        for (const route of service.routes) {
+            if (!route.path && !route.host) throw new Error("You must provide either a route path or a route host");
+        }
+}
+
 async function createAditionalConfigurations(){
     const volumesFolder = '/usr/share/kong/aditionalConfigurations';
     const finalFolder = '/app/aditionalConfigurations';
@@ -225,29 +206,89 @@ async function createAditionalConfigurations(){
         return;
     }
     
-    for(const fileName of fileNames){
-        const aditionalConfigurationsFinalPath = joinPath(finalFolder,fileName);
-        const aditionalConfigurations = require(aditionalConfigurationsFinalPath);
+    await loopThroughAditionalConfigurationFiles(fileNames, finalFolder);
+}
+async function loopThroughAditionalConfigurationFiles(fileNames, finalFolder) {
+    for (const fileName of fileNames) {
+        const aditionalConfigurationsFinalPath = joinPath(finalFolder, fileName);
+        const configuration = require(aditionalConfigurationsFinalPath);
         console.log(`Additional configurations found in ${aditionalConfigurationsFinalPath}, creating...`);
-        let currentConfigurationIndex=0;
-        for(const configuration of aditionalConfigurations){
-            console.log(`Creating additional configuration ${configuration.name}...`);
-            try{
-                validateAditionalConfiguration(configuration);
-                const createServiceResult = await createService(kongOptions,configuration.name,configuration.host,configuration.port,configuration.path,);
-                if(!createServiceResult) throw new Error("Create service response returned false");
-                if(createServiceResult.error) throw createServiceResult.error;
-                await createAditionalConfigurationServiceRoutes(createServiceResult.id, configuration);
-                await createAditionalConfigurationServicePlugins(createServiceResult.id,configuration);
-                console.log(`Additional configuration ${configuration.name} created...`)
-            }catch(error){
-                console.error(`Error creating the additional configuration index[${currentConfigurationIndex}]:`, error.message);
-            }
-            currentConfigurationIndex++;
+
+        console.log(`Creating additional configuration ${configuration.name}...`);
+        try {
+            validateAditionalConfiguration(configuration);
+            if (configuration.services && configuration.services.length > 0)
+                await createAditionalConfigurationServices(configuration.services);
+            if (configuration.plugins && configuration.plugins.length > 0)
+                await createAditionalConfigurationGlobalPlugins(configuration.plugins);
+        } catch (error) {
+            console.error(`Error creating the additional configuration index[${currentConfigurationIndex}]:`, error.message);
         }
+
         console.log(`Additional configurations found in ${aditionalConfigurationsFinalPath}, created...`);
     }
 }
+
+async function createAditionalConfigurationGlobalPlugins(plugins){
+    let currentGlobalPluginIndex=0;
+    const createdPlugins=[];
+    for (const plugin of plugins) {
+        try {
+            const createPluginResult = await createPlugin(kongOptions, plugin.name, plugin.config, plugin.enabled ?? true);
+            if (!createPluginResult) throw new Error("Create global plugin response returned false");
+            createdPlugins.push({
+                id:createPluginResult.id,
+                name:plugin.name,
+                config:JSON.stringify(plugin.config)
+            });
+            currentGlobalPluginIndex++;
+        } catch (error) {
+            console.error(`Error creating the additional configuration service index[${currentGlobalPluginIndex}]:`, error);
+        }
+    }
+
+
+    if(createdPlugins.length===0) return;
+    logInformationAsTable("ADITIONAL GLOBAL PLUGINS",createdPlugins);
+}
+async function createAditionalConfigurationServices(services) {
+    let currentServiceIndex=0;
+    const createdServices=[];
+    const serviceRoutes=[];
+    const servicePlugins=[];
+    for (const service of services) {
+        try {
+            const createServiceResult = await createService(kongOptions, service.name, service.host, service.port, service);
+            if (!createServiceResult) throw new Error("Create service response returned false");
+            if (createServiceResult.error) throw createServiceResult.error;
+            await createAditionalConfigurationServiceRoutes(createServiceResult.id, service);
+            await createAditionalConfigurationServicePlugins(createServiceResult.id, service);
+            console.log(`Additional configuration service ${service.name} created...`);
+            createdServices.push({
+                id:createServiceResult.id,
+                name:service.name,
+                host:service.host,
+                port:parseInt(service.port),
+                protocol:service.protocol
+            })
+            serviceRoutes.push(...service.routes.map(
+                route=>({serviceId:createServiceResult.id,
+                serviceName:service.name,...route}))
+            );
+            servicePlugins.push(...service.plugins.map(
+                plugin=>({serviceId:createServiceResult.id,
+                serviceName:service.name,...plugin}))
+            );
+            currentServiceIndex++;
+        } catch (error) {
+            console.error(`Error creating the additional configuration service index[${currentServiceIndex}]:`, error);
+        }
+    }
+    logInformationAsTable("ADITIONAL SERVICES",createdServices);
+    logInformationAsTable("ADITIONAL SERVICES ROUTES",serviceRoutes);
+    logInformationAsTable("ADITIONAL SERVICES PLUGINS",servicePlugins);
+}
+
 async function createAditionalConfigurationServicePlugins(serviceId,configuration) {
     for (const plugin of (configuration.plugins ?? [])) {
         await createPlugin(kongOptions, plugin.name, plugin.config, {
@@ -278,6 +319,5 @@ module.exports = {
     checkKongAdminAPI,
     returnSetupInfo,
     createAditionalConfigurations,
-    createKibanaService,
     createGlobalLogstashPlugin
 }

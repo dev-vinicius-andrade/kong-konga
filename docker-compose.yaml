@@ -79,11 +79,7 @@ services:
       - db-data:/var/lib/postgresql/data
     env_file:
       - ./.env.local
-  sample-api:
-    image: vad1mo/hello-world-rest
-    container_name: sample-api
-    networks:
-      - kong-net
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     volumes:
@@ -147,9 +143,6 @@ services:
       - pgadmin-data:/var/lib/pgadmin
   portainer:
     image: portainer/portainer-ce:latest
-    ports:
-      - "${PORTAINER_EXPOSED_HTTP_PORT}:${PORTAINER_INTERNAL_HTTP_PORT}"
-      - "${PORTAINER_EXPOSED_HTTPS_PORT}:${PORTAINER_INTERNAL_HTTPS_PORT}"
     networks:
       - kong-net
     volumes:
@@ -158,7 +151,6 @@ services:
     restart: unless-stopped
     env_file:
       - ./.env.local
-
 volumes:
   konga-data:
     driver: local

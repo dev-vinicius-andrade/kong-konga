@@ -1,6 +1,7 @@
 const menu = require('node-menu');
 const { exec  } = require('child_process');
 const setup = require('../setup');
+const {logInformationAsTable} = require('../helpers')
 function killInteractiveProcess() {
     const processName = "node /app/modules/main.js --interactive";
     exec(`ps -ef | grep "${processName}" | grep -v grep | awk '{print $2}'`, (error, pid, stderr) => {
@@ -22,7 +23,7 @@ async function createSetupMenu(){
         const isConnected = await setup.checkKongAdminAPI(10,5000);
         menu.disableDefaultHeader()
         .customHeader(()=>{
-            console.table(infos);
+            logInformationAsTable('SETUP INFOS', infos);
             process.stdout.write(`Can connect to kong admin api: \x1b[32m${isConnected} \x1b[0m` + "\n");
             
         })
@@ -65,6 +66,7 @@ async function createSetupMenu(){
         .addDelimiter('-', 40)
         .start();
     }catch(err){
+        logInformationAsTable('SETUP INFOS WITH ERRORS', infos);
         console.table(infos);
         console.log("Error:",err);
     }

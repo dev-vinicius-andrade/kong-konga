@@ -7,6 +7,7 @@ async function runDatabaseSetup(){
     console.table(returnKongaSetupInfo());
     await runKongDatabaseSetup();
     await runKongaDatabaseSetup();
+    console.log("Default setup finished successfully...");
 }
 module.exports = {
     runDatabaseSetup,
