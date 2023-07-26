@@ -1,3 +1,3 @@
 #!/bin/bash
-source "$(pwd)/scripts/local/helpers.sh"
+source "$(pwd)/scripts/helpers.sh"
 delete_volumes_from_docker_compose_volumes_local

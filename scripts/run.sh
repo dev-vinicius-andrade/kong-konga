@@ -8,8 +8,8 @@ if [[ ! -f "$(pwd)/docker-compose.volumes.local.yaml" ]]; then
 fi
 
 # check if not exists .env.local and exit if not exists
-if [[ ! -f "../.env.local" ]]; then
-    echo "$(pwd)/../.env.local does not exist"
+if [[ ! -f ".env.local" ]]; then
+    echo "$(pwd)/.env.local does not exist"
     echo_run_help
     exit 1
 fi
