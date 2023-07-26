@@ -1,6 +1,6 @@
 #!/bin/bash
-source help.sh
+source "$(pwd)/helpers.sh"
 echo "Creating local files" >&2
-copy_file_with_overwrite_question "../.env.example" "../.env.local"
-copy_file_with_overwrite_question "../docker-compose.volumes.yaml" "../docker-compose.volumes.local.yaml"
-copy_file_with_overwrite_question "../docker-compose.setup.yaml" "../docker-compose.setup.local.yaml"
+copy_file_with_overwrite_question "$(pwd)/../.env.example" "$(pwd)/../.env.local"
+copy_file_with_overwrite_question "$(pwd)/../docker-compose.volumes.yaml" "$(pwd)/../docker-compose.volumes.local.yaml"
+copy_file_with_overwrite_question "$(pwd)/../docker-compose.setup.yaml" "$(pwd)/../docker-compose.setup.local.yaml"
