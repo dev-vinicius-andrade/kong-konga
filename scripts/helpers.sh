@@ -44,7 +44,7 @@ copy_file_with_overwrite_question(){
         cp "$source_file" "$destination_file"
     else
         echo "Exiting" >&2
-        exit 0
+        return
     fi
   else
     cp "$source_file" "$destination_file"
