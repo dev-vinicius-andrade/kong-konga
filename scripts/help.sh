@@ -1,6 +1,5 @@
 #!/bin/bash
 echo_run_help(){
-    clear
     echo >&2
     echo >&2
     echo >&2
