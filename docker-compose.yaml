@@ -1,7 +1,5 @@
 version: "3.9"
-networks:
-  kong-net:
-  db-net:
+
 services:
   konga:
     image: pantsel/konga
@@ -193,3 +191,6 @@ volumes:
       o: bind
       type: none
       device: ./container_volumes/elasticsearch/data
+networks:
+  kong-net:
+  db-net:

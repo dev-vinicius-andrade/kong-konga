@@ -96,7 +96,6 @@
 					"up": {
 						"build": false,
 						"detached": true,
-						"profiles": ["setup"]
 					},
 					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",
@@ -116,7 +115,6 @@
 					"up": {
 						"build": false,
 						"detached": true,
-						"profiles": ["setup"]
 					},
 					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",

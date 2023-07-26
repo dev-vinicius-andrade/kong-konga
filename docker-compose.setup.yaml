@@ -1,8 +1,5 @@
 version: "3.9"
 
-networks:
-  kong-net:
-  db-net:
 services:
   kong-migrations:
     command: kong migrations bootstrap --help
@@ -20,8 +17,6 @@ services:
     networks:
       - kong-net
     restart: on-failure
-    profiles:
-      - setup
     stdin_open: true
     tty: true
   kong:
@@ -57,8 +52,6 @@ services:
       - ./.env.local
     volumes:
       - kong-banner-conf:/opt/bitnami/apps/bitnami/banner/conf
-    profiles:
-      - setup
   setup-database:
     build:
       context: setup/
@@ -77,8 +70,6 @@ services:
       - ./.env.local
     stdin_open: true
     tty: true
-    profiles:
-      - setup
   setup:
     build:
       context: setup/
@@ -105,8 +96,6 @@ services:
       - ./.env.local
     stdin_open: true
     tty: true
-    profiles:
-      - setup
   konga:
     image: pantsel/konga
     container_name: konga
@@ -136,8 +125,6 @@ services:
       - konga-usr-share-konga-data:/usr/share/konga/data
     env_file:
       - ./.env.local
-    profiles:
-      - setup
   setup-elk:
     build:
       context: setup/
@@ -156,8 +143,6 @@ services:
         condition: service_started
     env_file:
       - ./.env.local
-    profiles:
-      - setup
   logstash:
     image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
     volumes:
@@ -177,8 +162,6 @@ services:
       - elasticsearch
     env_file:
       - ./.env.local
-    profiles:
-      - setup
   kibana:
     image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
     volumes:
@@ -197,8 +180,6 @@ services:
       - "${KIBANA_PORT}:${KIBANA_PORT}"
     env_file:
       - ./.env.local
-    profiles:
-      - setup
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     volumes:
@@ -266,5 +247,6 @@ services:
     depends_on:
       kong:
         condition: service_started
-    profiles:
-      - setup
+networks:
+  kong-net:
+  db-net:
