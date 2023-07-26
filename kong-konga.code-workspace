@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
+
 	},
 	"launch": {
 		"version": "0.2.0",
@@ -103,6 +104,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
+						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.yaml",
 					]
 				},
@@ -122,7 +124,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
-						"${workspaceFolder}/docker-compose.yaml",
+						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.setup.yaml"
 					]
 				},
@@ -134,7 +136,7 @@
 					 "down": {
 					 	"removeOrphans": true,
 					 	"removeVolumes": true,
-					 	"volumes": true,
+					 	"volumes": true
 					 },
 					"envFile": "${workspaceFolder}/.env.local",
 					"projectName": "kong-konga-setup",
@@ -142,7 +144,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
-						"${workspaceFolder}/docker-compose.yaml",
+						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.setup.yaml"
 					]
 				}
@@ -162,6 +164,7 @@
 						"${workspaceFolder}/.env.local",
 					],
 					"files": [
+						"${workspaceFolder}/docker-compose.volumes.yaml",
 						"${workspaceFolder}/docker-compose.yaml",
 					]
 				}

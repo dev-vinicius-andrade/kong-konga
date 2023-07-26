@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 container_volumes
+docker-compose.deploy.yaml
+docker-compose.volumes.*.yaml
 .env.*
 !.env.example
 # User-specific files
