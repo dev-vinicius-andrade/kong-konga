@@ -1,6 +1,6 @@
 
 create_recursive_docker_compose_volumes_local(){
-  grep -oP '(?<=device: ).*' "$(pwd)/../docker-compose.volumes.local.yaml" | while read -r path; do
+  grep -oP '(?<=device: ).*' "$(pwd)/docker-compose.volumes.local.yaml" | while read -r path; do
     if [[ ! -d "$path" ]]; then
       echo "Creating $path"
       mkdir -p "$path"
@@ -16,7 +16,7 @@ create_recursive_docker_compose_volumes_local(){
   done
 }
 delete_volumes_from_docker_compose_volumes_local(){
-  grep -oP '(?<=device: ).*' "$(pwd)/../docker-compose.volumes.local.yaml" | while read -r path; do
+  grep -oP '(?<=device: ).*' "$(pwd)/docker-compose.volumes.local.yaml" | while read -r path; do
     if [[ -d "$path" ]]; then
       echo "Deleting $path"
       rm -Rf "$path"

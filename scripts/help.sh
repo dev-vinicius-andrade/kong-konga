@@ -31,9 +31,9 @@ echo_run_help(){
     echo >&2
     echo "Here are some scripts that can also help you clear up your environment case needed." >&2
     echo "    - Clear dangling volumes: docker volume rm $(docker volume ls -qf dangling=true)" >&2
-    echo "          source ./scripts/helpers.sh delete_volumes_from_docker_compose_volumes_local" >&2
+    echo "          ./scripts/run/delete_volumes_from_docker_compose_volumes_local" >&2
     echo "    - Clear all volumes folders:" >&2
-    echo "          source ./scripts/helpers.sh delete_recursive_folder your_volume_absolute_path" >&2
+    echo "          ./scripts/run/delete_recursive_folder your_volume_absolute_path" >&2
 
 
     echo "___________________________   HELP   ___________________________" >&2
