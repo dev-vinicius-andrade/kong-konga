@@ -1,7 +1,7 @@
 [
     {
         "username":"${LOGSTASH_ELASTICSEARCH_USERNAME:-logstash_internal}",
-        "password":"${LOGSTASH_ELASTICSEARCH_PASSWORD:-changeme}",
+        "password":"${LOGSTASH_INTERNAL_PASSWORD:-changeme}",
         "roles":[
             "logstash_writer"
         ]
