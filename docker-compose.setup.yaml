@@ -40,8 +40,8 @@ services:
       KONG_PG_USER: ${KONG_DB_USER}
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_PROXY_LISTEN: 0.0.0.0:80
-      KONG_PROXY_LISTEN_SSL: 0.0.0.0:443
+      KONG_PROXY_LISTEN: 0.0.0.0:80,0.0.0.0:443 ssl
+      KONG_LUA_SSL_TRUSTED_CERTIFICATE: ${KONG_LUA_SSL_TRUSTED_CERTIFICATE:-system}
     networks:
       - kong-net
     ports:
