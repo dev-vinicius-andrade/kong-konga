@@ -25,6 +25,7 @@ services:
     restart: unless-stopped
     volumes:
       - konga-data:/app/kongadata
+      - konga-usr-share-konga-data:/usr/share/konga/data
 
     env_file:
       - ./.env.local
